@@ -1,10 +1,10 @@
 {
-  "name": "hackathon-phase-4",
+  "name": "hackathon-2-phases-4",
   "framework": "nextjs",
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/.next",
   "installCommand": "cd frontend && npm install",
-  "rootDirectory": ".",
+  "rootDirectory": "frontend",
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -13,13 +13,6 @@
     {
       "source": "/(.*)",
       "destination": "/$1"
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/",
-      "permanent": false
     }
   ],
   "headers": [
@@ -41,9 +34,6 @@
       ]
     }
   ],
-  "env": {
-    "NEXT_PUBLIC_API_URL": "https://your-backend-url.herokuapp.com/api/v1"
-  },
   "build": {
     "env": {
       "NODE_VERSION": "20"
