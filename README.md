@@ -1,6 +1,58 @@
 # Hackathon Phase 4 - Full Stack Application
 
-A modern full-stack web application built with **Next.js** (Frontend) and **Python/Node.js** (Backend), designed for hackathon Phase 4.
+A modern full-stack web application built with **Next.js 16** (Frontend) and **Python/Node.js** (Backend), designed for hackathon Phase 4.
+
+## 🚀 Vercel Deployment (Recommended)
+
+This project is **pre-configured for one-click deployment** to Vercel.
+
+### Option 1: One-Click Deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/muhammadafnandood/-Hackathon-2-Phases-4-)
+
+### Option 2: Deploy via Vercel CLI
+
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Login to Vercel
+vercel login
+
+# Deploy
+vercel --prod
+```
+
+### Option 3: Automatic Deployments from GitHub
+
+1. Go to [vercel.com](https://vercel.com)
+2. Click "Add New Project"
+3. Import your GitHub repository: `muhammadafnandood/-Hackathon-2-Phases-4-`
+4. Configure environment variables (see below)
+5. Click "Deploy"
+
+**Vercel will automatically:**
+- Detect Next.js framework
+- Run `npm run build` in the `frontend` directory
+- Deploy your application
+- Provide a live URL (e.g., `your-project.vercel.app`)
+
+### Environment Variables for Vercel
+
+Add these in Vercel project settings → Environment Variables:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_API_URL` | Backend API URL | `https://your-backend.vercel.app/api` |
+| `NEXT_PUBLIC_BETTER_AUTH_SECRET` | Authentication secret | `your-secret-key-min-32-chars` |
+
+### Pre-Deployment Checklist
+
+- ✅ Ensure `node_modules/` is in `.gitignore` (already configured)
+- ✅ Ensure `.env` files are NOT committed (already configured)
+- ✅ `vercel.json` is properly configured (already done)
+- ✅ `frontend/package.json` has all dependencies (verified)
+- ✅ Build script works locally: `cd frontend && npm run build`
 
 ## 🚀 Quick Start
 
@@ -14,8 +66,8 @@ A modern full-stack web application built with **Next.js** (Frontend) and **Pyth
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/BinteZain/-Hackathon_2_Phase_4-.git
-cd "-Hackathon_2_Phase_4-"
+git clone https://github.com/muhammadafnandood/-Hackathon-2-Phases-4-.git
+cd "4 phir se"
 ```
 
 2. **Install Frontend Dependencies**
@@ -156,10 +208,32 @@ npm run lint
 
 ## ⚠️ Important Notes
 
-- **DO NOT commit `node_modules/`** - It's excluded in `.gitignore`
-- **DO NOT commit `.env` files** - Keep secrets secure
-- **DO NOT commit `.next/`** - Build artifacts are excluded
-- Always run `npm install` after pulling changes
+### ❌ NEVER Commit These Files
+
+The following are **already excluded** in `.gitignore` - never commit them:
+
+- **`node_modules/`** - Dependencies (500MB+, will cause deployment errors)
+- **`.env*`** - Environment files with secrets
+- **`.next/`** - Build artifacts
+- **`.vercel/`** - Vercel configuration
+- **`__pycache__/`** - Python cache files
+- **`*.log`** - Log files
+- **`.DS_Store`, `Thumbs.db`** - OS files
+
+### ✅ Always Commit These Files
+
+- **`package.json`** and **`package-lock.json`** - Dependencies
+- **`vercel.json`** - Deployment configuration
+- **`README.md`** - Documentation
+- **Source code** - `.tsx`, `.ts`, `.js`, `.py` files
+- **Configuration files** - `.gitignore`, `tsconfig.json`, etc.
+
+### 🔒 Security Best Practices
+
+- Never commit API keys, passwords, or secrets
+- Use `.env.local` for local development
+- Use Vercel Environment Variables for production
+- Rotate secrets if accidentally committed
 
 ## 🤝 Contributing
 
@@ -174,8 +248,9 @@ This project is part of Hackathon Phase 4.
 
 ## 🔗 Links
 
-- **GitHub Repository**: https://github.com/BinteZain/-Hackathon_2_Phase_4-
+- **GitHub Repository**: https://github.com/muhammadafnandood/-Hackathon-2-Phases-4-
 - **Vercel Documentation**: https://vercel.com/docs
+- **Next.js Documentation**: https://nextjs.org/docs
 
 ## 🆘 Troubleshooting
 

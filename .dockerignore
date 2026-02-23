@@ -9,6 +9,10 @@ helm/
 helm-charts/
 k8s/
 
+# Node modules
+node_modules/
+**/node_modules/
+
 # IDE
 .idea/
 .vscode/
@@ -27,3 +31,8 @@ logs/
 # Temp
 tmp/
 temp/
+
+# Build artifacts
+.next/
+dist/
+build/
