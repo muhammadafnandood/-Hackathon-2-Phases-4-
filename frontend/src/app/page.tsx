@@ -26,14 +26,8 @@ interface Todo {
   updatedAt: string;
 }
 
-interface ApiResponse {
-  success: boolean;
-  data?: Todo | Todo[];
-  count?: number;
-  error?: string;
-}
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+// Generate unique ID
+const generateId = () => Math.random().toString(36).substring(2, 15);
 
 // Floating bubble component
 function FloatingBubble({ delay, size, left }: { delay: number; size: string; left: string }) {
@@ -92,113 +86,64 @@ export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
-  const [backendStatus, setBackendStatus] = useState<"connected" | "disconnected">("disconnected");
   const [darkMode, setDarkMode] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
 
-  const fetchTodos = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/todos`);
-      const data: ApiResponse = await res.json();
-      if (data.success && Array.isArray(data.data)) {
-        setTodos(data.data);
-      }
-      setError(null);
-    } catch (err) {
-      setError("Failed to connect to backend");
-      setBackendStatus("disconnected");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const checkHealth = async () => {
-    try {
-      const res = await fetch(`${API_URL}/health`);
-      if (res.ok) {
-        setBackendStatus("connected");
-      } else {
-        setBackendStatus("disconnected");
-      }
-    } catch (err) {
-      setBackendStatus("disconnected");
-    }
-  };
-
+  // Load todos from localStorage on mount
   useEffect(() => {
-    fetchTodos();
-    checkHealth();
-    const interval = setInterval(checkHealth, 5000);
-    return () => clearInterval(interval);
+    const storedTodos = localStorage.getItem("todos");
+    if (storedTodos) {
+      try {
+        setTodos(JSON.parse(storedTodos));
+      } catch (e) {
+        console.error("Failed to parse todos from localStorage");
+      }
+    }
+    setLoading(false);
   }, []);
+
+  // Save todos to localStorage whenever they change
+  useEffect(() => {
+    if (!loading) {
+      localStorage.setItem("todos", JSON.stringify(todos));
+    }
+  }, [todos, loading]);
 
   const addTodo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTodo.trim()) return;
 
     setIsAdding(true);
-    try {
-      const res = await fetch(`${API_URL}/api/todos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: newTodo }),
-      });
-      const data: ApiResponse = await res.json();
-      if (data.success && data.data) {
-        setTodos([...todos, data.data as Todo]);
-        setNewTodo("");
-      }
-    } catch (err) {
-      setError("Failed to add todo");
-    } finally {
-      setIsAdding(false);
-    }
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const todo: Todo = {
+      id: generateId(),
+      title: newTodo.trim(),
+      completed: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    
+    setTodos([...todos, todo]);
+    setNewTodo("");
+    setIsAdding(false);
   };
 
-  const toggleTodo = async (id: string, currentStatus: boolean) => {
-    try {
-      const res = await fetch(`${API_URL}/api/todos/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: !currentStatus }),
-      });
-      const data: ApiResponse = await res.json();
-      if (data.success && data.data) {
-        setTodos(todos.map(t => t.id === id ? data.data! as Todo : t));
-      }
-    } catch (err) {
-      setError("Failed to update todo");
-    }
+  const toggleTodo = (id: string) => {
+    setTodos(todos.map(t => 
+      t.id === id ? { ...t, completed: !t.completed, updatedAt: new Date().toISOString() } : t
+    ));
   };
 
-  const deleteTodo = async (id: string) => {
-    try {
-      const res = await fetch(`${API_URL}/api/todos/${id}`, {
-        method: "DELETE",
-      });
-      const data: ApiResponse = await res.json();
-      if (data.success) {
-        setTodos(todos.filter(t => t.id !== id));
-      }
-    } catch (err) {
-      setError("Failed to delete todo");
-    }
+  const deleteTodo = (id: string) => {
+    setTodos(todos.filter(t => t.id !== id));
   };
 
-  const deleteCompleted = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/todos/completed/all`, {
-        method: "DELETE",
-      });
-      const data: ApiResponse = await res.json();
-      if (data.success) {
-        setTodos(todos.filter(t => !t.completed));
-      }
-    } catch (err) {
-      setError("Failed to delete completed todos");
-    }
+  const deleteCompleted = () => {
+    setTodos(todos.filter(t => !t.completed));
   };
 
   const filteredTodos = todos.filter(todo => {
@@ -291,27 +236,19 @@ export default function Home() {
             <SparklesIcon className="w-5 h-5 text-yellow-400" />
           </motion.p>
 
-          {/* Backend status */}
+          {/* Online status - always online since we use localStorage */}
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.6, type: "spring" }}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold glass-light ${
-              backendStatus === "connected"
-                ? "border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.4)]"
-                : "border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.4)]"
-            }`}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold glass-light border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.4)]"
           >
             <motion.span
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className={`w-3 h-3 rounded-full ${
-                backendStatus === "connected" ? "bg-green-500" : "bg-red-500"
-              }`}
+              className="w-3 h-3 rounded-full bg-green-500"
             />
-            <span className={backendStatus === "connected" ? "text-green-400" : "text-red-400"}>
-              {backendStatus === "connected" ? "● Online" : "● Offline"}
-            </span>
+            <span className="text-green-400">● Online</span>
           </motion.div>
 
           {/* Feature badges */}
@@ -362,29 +299,6 @@ export default function Home() {
             gradient="from-green-500 to-emerald-500"
           />
         </motion.div>
-
-        {/* Error Message */}
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ y: -20, opacity: 0, scale: 0.9 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: -20, opacity: 0, scale: 0.9 }}
-              className="glass-light border-red-500/50 rounded-2xl p-4 mb-6 flex items-center justify-between shadow-[0_0_30px_rgba(239,68,68,0.3)]"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-red-400">{error}</span>
-              </div>
-              <button
-                onClick={() => setError(null)}
-                className="text-red-400 hover:text-red-300 transition-colors text-xl"
-              >
-                ×
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Main card */}
         <motion.div
@@ -511,7 +425,7 @@ export default function Home() {
                       <motion.button
                         whileHover={{ scale: 1.2 }}
                         whileTap={{ scale: 0.8 }}
-                        onClick={() => toggleTodo(todo.id, todo.completed)}
+                        onClick={() => toggleTodo(todo.id)}
                         className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all ${
                           todo.completed
                             ? "bg-gradient-to-r from-green-500 to-emerald-500 border-transparent"
@@ -560,10 +474,10 @@ export default function Home() {
           <div className="glass-light inline-block px-6 py-4 rounded-2xl">
             <div className="flex items-center justify-center gap-2 mb-2">
               <RocketLaunchIcon className="w-5 h-5 text-purple-400" />
-              <span className="text-gray-300 font-semibold">Deployed with Helm on Kubernetes</span>
+              <span className="text-gray-300 font-semibold">Data saved in your browser</span>
             </div>
             <p className="text-gray-500 text-sm">
-              Scale with: <code className="glass-dark px-2 py-1 rounded text-cyan-400">kubectl-ai "scale backend to 5 replicas"</code>
+              Your tasks are stored locally and persist across sessions
             </p>
           </div>
         </motion.footer>
