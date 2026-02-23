@@ -1,0 +1,23 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/tasks",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "destination": "/tasks",
+      "permanent": false
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://your-backend-url.herokuapp.com/api/v1",
+    "NEXT_PUBLIC_BETTER_AUTH_SECRET": "eLlMDErNeheyQrPK7EbORWfOKjnB6HoT"
+  }
+}

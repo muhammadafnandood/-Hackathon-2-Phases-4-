@@ -1,0 +1,29 @@
+# Root level dockerignore for docker-compose build context
+
+# Ignore subdirectories - only root files matter
+hackathon-todo/
+specs/
+history/
+.k8s/
+helm/
+helm-charts/
+k8s/
+
+# IDE
+.idea/
+.vscode/
+
+# Git
+.git/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temp
+tmp/
+temp/
